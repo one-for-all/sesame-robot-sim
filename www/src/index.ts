@@ -15,7 +15,7 @@ import("sesame").then((furuta) => {
     };
     simulator.graphics.lookAt(cameraPosition);
 
-    simulator.run(10, 0); // 10
+    simulator.run(100, 0); // 10
 
     setSimulator(simulator);
   });

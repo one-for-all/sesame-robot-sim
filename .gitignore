@@ -8,8 +8,10 @@ www/static/build/*.hex
 !www/static/build/furuta.ino.hex
 *.part
 
-
+rom/
 www/static/app/build/esp32.esp32.esp32/
 app/build/esp32.esp32.esp32/
 app/
-rom/
+
+www/static/sesame/build/esp32.esp32.esp32/
+sesame/
