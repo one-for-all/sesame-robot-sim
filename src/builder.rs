@@ -21,7 +21,7 @@ use urdf_rs::{Geometry, Robot};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
-    control::{SesameESP32Controller, pid::SesameServoController},
+    control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
     util::{add_collision_points, build_joint, build_rigid},
 };
 
@@ -56,7 +56,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
 
     let body_frame = "body";
     let body = build_rigid(body_frame, "internal_frame", urdf, &mut meshes.body);
-    let body_joint = Joint::new_floating(Transform3D::move_z(body_frame, WORLD_FRAME, 0.053));
+    let body_joint = Joint::new_floating(Transform3D::move_z(body_frame, WORLD_FRAME, 0.05));
 
     let l2_frame = "l2";
     let l2 = build_rigid(l2_frame, "femur_joint_l2", urdf, &mut meshes.l2);
@@ -77,7 +77,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
         l2_frame,
         "l4",
         urdf,
-        Vector3::z_axis(),
+        -Vector3::z_axis(),
         (180. as Float).to_radians(),
     );
 
@@ -146,7 +146,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
         r1_frame,
         "r3",
         urdf,
-        Vector3::z_axis(),
+        -Vector3::z_axis(),
         (180. as Float).to_radians(),
     );
 
@@ -204,6 +204,7 @@ pub async fn createSesame() -> InterfaceHybrid {
     let mut state = build_sesame(&mut meshes, &urdf_robot);
 
     let controller = SesameESP32Controller::new().await;
+    // let controller = SesameMotionController::new();
     // let controller = SesameServoController::new();
     // let controller = NullArticulatedController {};
     state.set_controller(0, controller);

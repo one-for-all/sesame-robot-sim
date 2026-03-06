@@ -1,7 +1,7 @@
 use esp32rs::{log::init_logging, plot::plot};
 use gorilla_physics::hybrid::control::NullArticulatedController;
 use sesame::{
-    builder::build_arms,
+    builder::{build_arms, build_sesame},
     control::{SesameESP32Controller, pid::SesameServoController},
 };
 
@@ -10,6 +10,7 @@ async fn main() {
     let _guard = init_logging();
 
     let mut state = build_arms();
+    // let mut state = build_sesame();
 
     let controller = SesameESP32Controller::new().await;
     // let controller = SesameServoController::new();

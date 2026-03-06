@@ -68,7 +68,7 @@ impl ArticulatedController for SesameServoController {
                     0.
                 };
                 -MG90S_MAX_TORQUE - kd
-            } * 0.1;
+            };
             // Note: artificially scale down servo torque.
             // TODO: fix servo torque constant?
 

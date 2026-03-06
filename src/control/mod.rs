@@ -7,10 +7,12 @@ use esp32rs::{
 };
 use gorilla_physics::{
     hybrid::{articulated::Articulated, control::ArticulatedController},
+    joint::{Joint, floating::FloatingJoint},
     types::Float,
 };
 use nalgebra::{DVector, dvector};
 
+pub mod motion;
 pub mod pid;
 
 pub struct SesameESP32Controller {
@@ -31,26 +33,34 @@ impl SesameESP32Controller {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
+            use gorilla_physics::util::read_file;
+
             rom1_data = fs::read("rom/wokwi/rom1.bin").unwrap();
             rom0_data = fs::read("rom/wokwi/rom0.bin").unwrap();
-            symbols.add("rom/symbols.txt");
+            symbols.add(&read_file("rom/symbols.txt"));
 
             bootloader_data = fs::read("sesame/build/sesame.ino.bootloader.bin").unwrap();
             partition_table_data = fs::read("sesame/build/sesame.ino.partitions.bin").unwrap();
             app_data = fs::read("sesame/build/sesame.ino.bin").unwrap();
-            symbols.add("sesame/build/symbols.txt");
-            symbols.add("sesame/bootloader_symbols.txt");
+            symbols.add(&read_file("sesame/build/symbols.txt"));
+            symbols.add(&read_file("sesame/bootloader_symbols.txt"));
         }
+
+        println!("{:?}", symbols.get(0x3ffe01e0));
 
         #[cfg(target_arch = "wasm32")]
         {
-            use gorilla_physics::interface::util::read_web_file_bytes;
+            use gorilla_physics::interface::util::{read_web_file, read_web_file_bytes};
             rom1_data = read_web_file_bytes("rom/wokwi/rom1.bin").await;
             rom0_data = read_web_file_bytes("rom/wokwi/rom0.bin").await;
+            symbols.add(&read_web_file("rom/symbols.txt").await);
+
             bootloader_data = read_web_file_bytes("sesame/build/sesame.ino.bootloader.bin").await;
             partition_table_data =
                 read_web_file_bytes("sesame/build/sesame.ino.partitions.bin").await;
             app_data = read_web_file_bytes("sesame/build/sesame.ino.bin").await;
+            symbols.add(&read_web_file("sesame/build/symbols.txt").await);
+            symbols.add(&read_web_file("sesame/bootloader_symbols.txt").await);
         }
 
         let esp32 = ESP32::new(
@@ -95,7 +105,11 @@ impl ArticulatedController for SesameESP32Controller {
 
     fn control(&mut self, articulated: &Articulated, input: &Vec<Float>) -> DVector<Float> {
         let mut torques = vec![];
-        let body_dof = articulated.joints[0].dof();
+        let body_dof = if let Joint::FloatingJoint(_) = articulated.joints[0] {
+            6
+        } else {
+            0
+        };
         for _ in 0..body_dof {
             torques.push(0.);
         }
@@ -117,7 +131,7 @@ impl ArticulatedController for SesameESP32Controller {
             self.mg90s[i].vel = v;
             // Note: artificially scale down servo torque.
             // TODO: fix servo torque constant?
-            let torque = self.mg90s[i].torque() * 0.1;
+            let torque = self.mg90s[i].torque() * 1.0;
             torques.push(torque);
         }
 

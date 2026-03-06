@@ -79,6 +79,13 @@ const webpackConfig = {
   performance: {
     hints: false,
   },
+  cache: {
+    // for speeding up the rebuild
+    type: "filesystem",
+    buildDependencies: {
+      config: [__filename],
+    },
+  },
 };
 
 module.exports = webpackConfig;
