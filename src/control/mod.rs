@@ -95,6 +95,8 @@ impl ArticulatedController for SesameESP32Controller {
 
     fn control(&mut self, articulated: &Articulated, input: &Vec<Float>) -> DVector<Float> {
         let mut torques = vec![];
+        assert_eq!(articulated.q().len(), self.mg90s.len());
+        assert_eq!(articulated.v().len(), self.mg90s.len());
         for i in 0..self.mg90s.len() {
             self.mg90s[i].angle = articulated.q()[i];
             self.mg90s[i].vel = articulated.v()[i];

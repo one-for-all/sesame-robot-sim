@@ -1,4 +1,4 @@
-use std::f64::consts::PI;
+use std::{f64::consts::PI, vec};
 
 use esp32rs::servo::{MG90S_MAX_SPEED, MG90S_MAX_TORQUE};
 use gorilla_physics::{
@@ -20,29 +20,47 @@ impl ArticulatedController for SesameServoController {
     fn step(&mut self, dt: Float, articulated: &Articulated) {}
 
     fn control(&mut self, articulated: &Articulated, input: &Vec<Float>) -> DVector<Float> {
-        let angle = articulated.q()[0];
-        let omega = articulated.v()[0];
+        let qs = articulated.q();
+        let vs = articulated.v();
+        let mut torques = vec![];
 
-        let target = PI / 2.; // Fixed 90 degree target
-        let diff = target - angle;
+        let targets = [
+            (135. as Float).to_radians(),
+            (45. as Float).to_radians(),
+            (45. as Float).to_radians(),
+            (135. as Float).to_radians(),
+            (0. as Float).to_radians(),
+            (180. as Float).to_radians(),
+            (0. as Float).to_radians(),
+            (180. as Float).to_radians(),
+        ];
+        for i in 0..8 {
+            let q = qs[i];
+            let v = vs[i];
 
-        let scale_factor = MG90S_MAX_TORQUE / MG90S_MAX_SPEED;
-        let torque = if diff > 0. {
-            let kd = if omega > 0. {
-                omega.min(MG90S_MAX_SPEED) * scale_factor
+            let target = targets[i]; // PI / 4.; // Fixed 45 degree target
+            let diff = target - q;
+
+            let scale_factor = MG90S_MAX_TORQUE / MG90S_MAX_SPEED;
+            let torque = if diff > 0. {
+                let kd = if v > 0. {
+                    v.min(MG90S_MAX_SPEED) * scale_factor
+                } else {
+                    0.
+                };
+                MG90S_MAX_TORQUE - kd
             } else {
-                0.
+                let kd = if v < 0. {
+                    v.max(-MG90S_MAX_SPEED) * scale_factor
+                } else {
+                    0.
+                };
+                -MG90S_MAX_TORQUE - kd
             };
-            MG90S_MAX_TORQUE - kd
-        } else {
-            let kd = if omega < 0. {
-                omega.max(-MG90S_MAX_SPEED) * scale_factor
-            } else {
-                0.
-            };
-            -MG90S_MAX_TORQUE - kd
-        };
 
-        dvector![torque]
+            torques.push(torque);
+        }
+
+        DVector::from_vec(torques)
     }
 }

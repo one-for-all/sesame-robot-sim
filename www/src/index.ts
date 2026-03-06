@@ -10,7 +10,7 @@ import("sesame").then((furuta) => {
     // simulator.updateHybrid();
 
     let cameraPosition = {
-      eye: { x: 0.3, y: 0.0, z: 0.3 },
+      eye: { x: -0.3, y: 0.0, z: 0.3 },
       target: { x: 0.0, y: 0, z: 0 },
     };
     simulator.graphics.lookAt(cameraPosition);

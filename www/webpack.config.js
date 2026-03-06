@@ -66,7 +66,7 @@ const webpackConfig = {
       watchDirectories: [
         path.resolve(__dirname, "../../gorilla-physics/src"),
         path.resolve(__dirname, "../../esp32rs/src"),
-        path.resolve(__dirname, "static"),
+        // path.resolve(__dirname, "static"),
       ],
     }),
 

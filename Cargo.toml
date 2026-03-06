@@ -13,18 +13,18 @@ crate-type = ["cdylib", "rlib"]
 name = "main"
 path = "src/main.rs"
 
+
+[[bin]]
+name = "urdf"
+path = "src/urdf.rs"
+
 [dependencies]
 gorilla-physics = { path = "../gorilla-physics/"}
 esp32rs = {path = "../esp32rs/"}
 nalgebra = { version = "0.33", features = [] }
+urdf-rs = "0.9.0"
 futures = "0.3"
-
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1"}
-
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+# [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [
@@ -37,3 +37,6 @@ web-sys = { version = "0.3", features = [
     "Performance",
     "TextDecoder",
 ] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1"}
