@@ -95,12 +95,29 @@ impl ArticulatedController for SesameESP32Controller {
 
     fn control(&mut self, articulated: &Articulated, input: &Vec<Float>) -> DVector<Float> {
         let mut torques = vec![];
-        assert_eq!(articulated.q().len(), self.mg90s.len());
-        assert_eq!(articulated.v().len(), self.mg90s.len());
+        let body_dof = articulated.joints[0].dof();
+        for _ in 0..body_dof {
+            torques.push(0.);
+        }
+
+        let qs = articulated.q();
+        let vs = articulated.v();
         for i in 0..self.mg90s.len() {
-            self.mg90s[i].angle = articulated.q()[i];
-            self.mg90s[i].vel = articulated.v()[i];
-            let torque = self.mg90s[i].torque();
+            let q;
+            let v;
+            if body_dof == 0 {
+                q = qs[i];
+                v = vs[i];
+            } else {
+                q = qs[body_dof + 1 + i];
+                v = vs[body_dof + i];
+            }
+
+            self.mg90s[i].angle = q;
+            self.mg90s[i].vel = v;
+            // Note: artificially scale down servo torque.
+            // TODO: fix servo torque constant?
+            let torque = self.mg90s[i].torque() * 0.1;
             torques.push(torque);
         }
 

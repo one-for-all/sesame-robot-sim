@@ -18,6 +18,11 @@ path = "src/main.rs"
 name = "urdf"
 path = "src/urdf.rs"
 
+
+[[bin]]
+name = "mesh_sesame"
+path = "src/mesh_sesame.rs"
+
 [dependencies]
 gorilla-physics = { path = "../gorilla-physics/"}
 esp32rs = {path = "../esp32rs/"}

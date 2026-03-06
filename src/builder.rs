@@ -1,6 +1,7 @@
 use futures::future::join_all;
 use gorilla_physics::{
     WORLD_FRAME,
+    collision::halfspace::HalfSpace,
     hybrid::{
         Hybrid, Rigid,
         articulated::Articulated,
@@ -21,7 +22,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
     control::{SesameESP32Controller, pid::SesameServoController},
-    util::{build_joint, build_rigid},
+    util::{add_collision_points, build_joint, build_rigid},
 };
 
 pub fn build_arms() -> Hybrid {
@@ -49,78 +50,13 @@ pub fn build_arms() -> Hybrid {
     state
 }
 
-fn build_sesame_body(frame: &str, meshes: &mut SesameMeshes, urdf: &Robot) -> Rigid {
-    return build_rigid(frame, "internal_frame", urdf, &mut meshes.body);
-
-    let link_urdf = urdf
-        .links
-        .iter()
-        .find(|&l| l.name == "internal_frame")
-        .unwrap();
-
-    let inertial = &link_urdf.inertial;
-    let m = inertial.mass.value; // 0.058723;
-    let com = Vector::from(inertial.origin.xyz.0); // vector![0.000166229, -0.00474841, 0.00160948];
-    let ixx = inertial.inertia.ixx; // 3.73043e-05;
-    let ixy = inertial.inertia.ixy; // -3.2552e-08;
-    let ixz = inertial.inertia.ixz; // 1.5282e-08;
-    let iyy = inertial.inertia.iyy; // 2.55313e-05;
-    let iyz = inertial.inertia.iyz; // 2.846e-09;
-    let izz = inertial.inertia.izz; // 6.16909e-05;
-
-    #[rustfmt::skip]
-    let moment_com = Matrix3::new(
-        ixx, ixy, ixz,
-        ixy, iyy, iyz,
-        ixz, iyz, izz
-    );
-
-    let moment =
-        moment_com + m * (com.norm_squared() * Matrix3::identity() - com * com.transpose());
-    let cross_part = m * com;
-
-    let mut body = Rigid::new(SpatialInertia::new(moment, cross_part, m, frame));
-
-    if let Some(mesh) = meshes.body.take() {
-        let visual = link_urdf
-            .visual
-            .iter()
-            .find(|&v| match &v.geometry {
-                Geometry::Mesh { filename, .. } => filename.contains("internal_frame"),
-                _ => false,
-            })
-            .unwrap();
-        let [r, p, y] = visual.origin.rpy.0;
-        let iso = Isometry3::from_parts(
-            Translation3::from(visual.origin.xyz.0),
-            UnitQuaternion::from_euler_angles(r, p, y),
-            // Translation3::new(-0.0256198, -0.00238918, -0.0151121),
-            // UnitQuaternion::from_euler_angles(0., 0., 0.),
-        );
-        // let color = vector![0.309804, 0.309804, 0.309804];
-        let [r, g, b, _] = visual
-            .material
-            .as_ref()
-            .unwrap()
-            .color
-            .as_ref()
-            .unwrap()
-            .rgba
-            .0;
-        let color = vector![r, g, b];
-        body.visual
-            .push((Visual::RigidMesh(mesh), iso, Some(color)));
-    }
-
-    body
-}
-
 pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     let mut state = Hybrid::empty();
+    state.add_halfspace(HalfSpace::new(Vector3::z_axis(), 0.));
 
     let body_frame = "body";
     let body = build_rigid(body_frame, "internal_frame", urdf, &mut meshes.body);
-    let body_joint = Joint::new_fixed(Transform3D::move_z(body_frame, WORLD_FRAME, 0.053));
+    let body_joint = Joint::new_floating(Transform3D::move_z(body_frame, WORLD_FRAME, 0.053));
 
     let l2_frame = "l2";
     let l2 = build_rigid(l2_frame, "femur_joint_l2", urdf, &mut meshes.l2);
@@ -134,7 +70,8 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let l4_frame = "l4";
-    let l4 = build_rigid(l4_frame, "foot_joint_l4", urdf, &mut meshes.l4);
+    let mut l4 = build_rigid(l4_frame, "foot_joint_l4", urdf, &mut meshes.l4);
+    add_collision_points(&mut l4, "l4", urdf);
     let l4_joint = build_joint(
         l4_frame,
         l2_frame,
@@ -156,7 +93,8 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r4_frame = "r4";
-    let r4 = build_rigid(r4_frame, "foot_joint_r4", urdf, &mut meshes.r4);
+    let mut r4 = build_rigid(r4_frame, "foot_joint_r4", urdf, &mut meshes.r4);
+    add_collision_points(&mut r4, "r4", urdf);
     let r4_joint = build_joint(
         r4_frame,
         r2_frame,
@@ -178,7 +116,8 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let l3_frame = "l3";
-    let l3 = build_rigid(l3_frame, "foot_joint_l3", urdf, &mut meshes.l3);
+    let mut l3 = build_rigid(l3_frame, "foot_joint_l3", urdf, &mut meshes.l3);
+    add_collision_points(&mut l3, "l3", urdf);
     let l3_joint = build_joint(
         l3_frame,
         l1_frame,
@@ -200,7 +139,8 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r3_frame = "r3";
-    let r3 = build_rigid(r3_frame, "foot_joint_r3", urdf, &mut meshes.r3);
+    let mut r3 = build_rigid(r3_frame, "foot_joint_r3", urdf, &mut meshes.r3);
+    add_collision_points(&mut r3, "r3", urdf);
     let r3_joint = build_joint(
         r3_frame,
         r1_frame,
@@ -263,8 +203,8 @@ pub async fn createSesame() -> InterfaceHybrid {
 
     let mut state = build_sesame(&mut meshes, &urdf_robot);
 
-    // let controller = SesameESP32Controller::new().await;
-    let controller = SesameServoController::new();
+    let controller = SesameESP32Controller::new().await;
+    // let controller = SesameServoController::new();
     // let controller = NullArticulatedController {};
     state.set_controller(0, controller);
 

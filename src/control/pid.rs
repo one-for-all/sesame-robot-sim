@@ -20,9 +20,14 @@ impl ArticulatedController for SesameServoController {
     fn step(&mut self, dt: Float, articulated: &Articulated) {}
 
     fn control(&mut self, articulated: &Articulated, input: &Vec<Float>) -> DVector<Float> {
+        let mut torques = vec![]; // 0 torques for floating body
+        let body_dof = articulated.joints[0].dof();
+        for _ in 0..body_dof {
+            torques.push(0.);
+        }
+
         let qs = articulated.q();
         let vs = articulated.v();
-        let mut torques = vec![];
 
         let targets = [
             (135. as Float).to_radians(),
@@ -35,8 +40,15 @@ impl ArticulatedController for SesameServoController {
             (180. as Float).to_radians(),
         ];
         for i in 0..8 {
-            let q = qs[i];
-            let v = vs[i];
+            let q;
+            let v;
+            if body_dof == 0 {
+                q = qs[i];
+                v = vs[i];
+            } else {
+                q = qs[body_dof + 1 + i];
+                v = vs[body_dof + i];
+            }
 
             let target = targets[i]; // PI / 4.; // Fixed 45 degree target
             let diff = target - q;
@@ -56,7 +68,9 @@ impl ArticulatedController for SesameServoController {
                     0.
                 };
                 -MG90S_MAX_TORQUE - kd
-            };
+            } * 0.1;
+            // Note: artificially scale down servo torque.
+            // TODO: fix servo torque constant?
 
             torques.push(torque);
         }

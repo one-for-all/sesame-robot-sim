@@ -7,7 +7,7 @@ import("sesame").then((furuta) => {
     let simulator = new Simulator(interfaceSimulator);
 
     simulator.addHybrid(state);
-    // simulator.updateHybrid();
+    simulator.updateHybrid();
 
     let cameraPosition = {
       eye: { x: -0.3, y: 0.0, z: 0.3 },
