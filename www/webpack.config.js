@@ -17,7 +17,7 @@ const webpackConfig = {
   entry: {
     index: "./src/index.ts",
     editor: "./src/editor.ts",
-    keys: "./src/keys.js",
+    // keys: "./src/keys.js",
   },
   devtool: isDev ? "inline-source-map" : false,
   output: {
@@ -43,6 +43,10 @@ const webpackConfig = {
       },
       {
         test: /\.ino$/,
+        type: "asset/source",
+      },
+      {
+        test: /\.h/,
         type: "asset/source",
       },
       {

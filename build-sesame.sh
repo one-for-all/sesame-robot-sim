@@ -8,3 +8,5 @@ arduino-cli compile --fqbn esp32:esp32:esp32 --build-property "build.partitions=
 xtensa-esp32-elf-nm -n  sesame/build/sesame.ino.elf > sesame/build/symbols.txt
 
 cp -r sesame/build www/static/sesame/
+cp sesame/sesame.ino www/src/assets/
+cp sesame/movement-sequences.h www/src/assets/

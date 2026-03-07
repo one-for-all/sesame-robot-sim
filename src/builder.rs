@@ -203,10 +203,10 @@ pub async fn createSesame() -> InterfaceHybrid {
 
     let mut state = build_sesame(&mut meshes, &urdf_robot);
 
-    let controller = SesameESP32Controller::new().await;
+    // let controller = SesameESP32Controller::new().await;
     // let controller = SesameMotionController::new();
     // let controller = SesameServoController::new();
-    // let controller = NullArticulatedController {};
+    let controller = NullArticulatedController {};
     state.set_controller(0, controller);
 
     InterfaceHybrid::new(state)

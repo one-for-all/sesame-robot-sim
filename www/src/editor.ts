@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor";
-import demo_ino from "./assets/demo.ino";
+import demo_ino from "./assets/sesame.ino";
+import movement_sequences from "./assets/movement-sequences.h";
 import dummy_ino_hex from "./assets/dummy.ino.hex";
 import readme from "./assets/README.md";
 import { getSimulator } from ".";
@@ -11,8 +12,12 @@ type FileEntry = {
 };
 
 let files: Record<string, FileEntry> = {
-  "furuta.ino": {
+  "sesame.ino": {
     content: demo_ino,
+    language: "cpp",
+  },
+  "movement-sequences.h": {
+    content: movement_sequences,
     language: "cpp",
   },
   "README.md": {
@@ -80,6 +85,7 @@ function getFileIcon(filename: string) {
   const ext = filename.split(".").pop();
   const icons: Record<string, string> = {
     ino: "📝",
+    h: "📝",
     md: "📋",
   };
   return icons[ext] || "📄";
@@ -126,7 +132,7 @@ async function runCode() {
     files[currentFile].content = editor.getValue();
   }
 
-  const source = files["furuta.ino"].content; // get furuta.ino file content
+  const source = files["sesame.ino"].content; // get sesame.ino file content
 
   // Disable button and show loading
   runButton.disabled = true;
@@ -188,5 +194,4 @@ document.getElementById("stopButton").addEventListener("click", async () => {
   let simulator = getSimulator();
   simulator.hybrid.reboot_code_controller(0, dummy_ino_hex);
   simulator.hybrid.reset();
-  simulator.hybrid.set_joint_q(2, Math.PI);
 });
