@@ -136,11 +136,11 @@ async function runCode() {
 
   // Disable button and show loading
   runButton.disabled = true;
-  runButton.innerHTML = "<span>⏳</span><span>Building...</span>";
+  runButton.innerHTML = "<span>⏳</span><span>Compiling...</span>";
   stopButton.disabled = true;
 
   outputDiv.classList.add("show");
-  outputContent.innerHTML = "<div>Building hex file...</div>";
+  outputContent.innerHTML = "<div>Compiling esp32 project...</div>";
 
   try {
     const result = await buildHex(source);
@@ -160,14 +160,15 @@ async function runCode() {
 
     if (result.hex) {
       output +=
-        '<div class="success">✓ Build successful!\nHex file generated (' +
+        '<div class="success">✓ Compile successful!\nbin file generated (' +
         result.hex.length +
         " bytes)</div>";
       console.log("Hex output:", result.hex);
     }
 
     outputContent.innerHTML =
-      output || '<div class="success">Build completed successfully!</div>';
+      output ||
+      '<div class="success">Compilation completed successfully!</div>';
 
     if (!result.error) {
       let simulator = getSimulator();
@@ -177,8 +178,8 @@ async function runCode() {
     }
   } catch (error) {
     outputContent.innerHTML =
-      '<div class="stderr">Build error:\n' + error.message + "</div>";
-    console.error("Build error:", error);
+      '<div class="stderr">Compile error:\n' + error.message + "</div>";
+    console.error("Compile error:", error);
   } finally {
     runButton.disabled = false;
     runButton.innerHTML = "<span>🔨</span><span>Run</span>";
