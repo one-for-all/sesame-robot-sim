@@ -60,15 +60,27 @@ void setup() {
 }
 
 void loop() {
+  // runRestPose();
   // runStandPose(1);
   runWavePose();
+  // runSwimPose();
+  // runPointPose();
+  // runPushupPose();
+  // runBowPose();
+  // runWormPose();
+  // runShakePose();
+  // runCrabPose();
+  // runDeadPose();
   // runWalkPose();
+  // runWalkBackward();
   // runTurnLeft();
   // runTurnRight();
-  // runPushupPose();
-  // runWalkBackward();
-  // runCrabPose();
-  // runDancePose(); // TODO: need to add more collision points for it
+
+  // The following are not really working. I need to add more collision points for them to look right. But you can still try those for amusement :)
+  // runShrugPose();
+  // runCutePose();
+  // runFreakyPose();
+  // runDancePose();
 }
 
 

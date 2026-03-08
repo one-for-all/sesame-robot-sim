@@ -13,12 +13,9 @@ use nalgebra::{
 };
 use urdf_rs::{Geometry, Robot};
 
-pub fn build_rigid(
-    frame: &str,
-    link_name: &str,
-    urdf: &Robot,
-    mesh: &mut Option<RigidMesh>,
-) -> Rigid {
+use crate::mesh::URDFMeshes;
+
+pub fn build_rigid(frame: &str, link_name: &str, urdf: &Robot, meshes: &mut URDFMeshes) -> Rigid {
     let link_urdf = urdf.links.iter().find(|&l| l.name == link_name).unwrap();
 
     let inertial = &link_urdf.inertial;
@@ -44,33 +41,40 @@ pub fn build_rigid(
 
     let mut body = Rigid::new(SpatialInertia::new(moment, cross_part, m, frame));
 
-    if let Some(mesh) = mesh.take() {
-        let visual = link_urdf
-            .visual
-            .iter()
-            .find(|&v| match &v.geometry {
-                Geometry::Mesh { filename, .. } => filename.contains(link_name),
-                _ => false,
-            })
-            .unwrap();
-        let [r, p, y] = visual.origin.rpy.0;
-        let iso = Isometry3::from_parts(
-            Translation3::from(visual.origin.xyz.0),
-            UnitQuaternion::from_euler_angles(r, p, y),
-        );
-        let [r, g, b, _] = visual
-            .material
-            .as_ref()
-            .unwrap()
-            .color
-            .as_ref()
-            .unwrap()
-            .rgba
-            .0;
-        let color = vector![r, g, b];
-        body.visual
-            .push((Visual::RigidMesh(mesh), iso, Some(color)));
+    if let Some(link_meshes) = meshes.meshes.remove(link_name) {
+        for (mesh, iso, color) in link_meshes.into_iter() {
+            body.visual
+                .push((Visual::RigidMesh(mesh), iso, Some(color)));
+        }
     }
+
+    // if let Some(mesh) = meshes.take() {
+    //     let visual = link_urdf
+    //         .visual
+    //         .iter()
+    //         .find(|&v| match &v.geometry {
+    //             Geometry::Mesh { filename, .. } => filename.contains(link_name),
+    //             _ => false,
+    //         })
+    //         .unwrap();
+    //     let [r, p, y] = visual.origin.rpy.0;
+    //     let iso = Isometry3::from_parts(
+    //         Translation3::from(visual.origin.xyz.0),
+    //         UnitQuaternion::from_euler_angles(r, p, y),
+    //     );
+    //     let [r, g, b, _] = visual
+    //         .material
+    //         .as_ref()
+    //         .unwrap()
+    //         .color
+    //         .as_ref()
+    //         .unwrap()
+    //         .rgba
+    //         .0;
+    //     let color = vector![r, g, b];
+    //     body.visual
+    //         .push((Visual::RigidMesh(mesh), iso, Some(color)));
+    // }
 
     body
 }

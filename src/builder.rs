@@ -15,13 +15,16 @@ use gorilla_physics::{
     na::vector,
     spatial::transform::Transform3D,
     types::Float,
+    util::console_log,
 };
 use nalgebra::{Isometry3, Matrix3, Translation3, UnitQuaternion, Vector, Vector3};
 use urdf_rs::{Geometry, Robot};
 use wasm_bindgen::prelude::wasm_bindgen;
+use web_sys::console;
 
 use crate::{
     control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
+    mesh::URDFMeshes,
     util::{add_collision_points, build_joint, build_rigid},
 };
 
@@ -50,16 +53,16 @@ pub fn build_arms() -> Hybrid {
     state
 }
 
-pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
+pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
     let mut state = Hybrid::empty();
     state.add_halfspace(HalfSpace::new(Vector3::z_axis(), 0.));
 
     let body_frame = "body";
-    let body = build_rigid(body_frame, "internal_frame", urdf, &mut meshes.body);
+    let body = build_rigid(body_frame, "internal_frame", urdf, meshes);
     let body_joint = Joint::new_floating(Transform3D::move_z(body_frame, WORLD_FRAME, 0.05));
 
     let l2_frame = "l2";
-    let l2 = build_rigid(l2_frame, "femur_joint_l2", urdf, &mut meshes.l2);
+    let l2 = build_rigid(l2_frame, "femur_joint_l2", urdf, meshes);
     let l2_joint = build_joint(
         l2_frame,
         body_frame,
@@ -70,7 +73,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let l4_frame = "l4";
-    let mut l4 = build_rigid(l4_frame, "foot_joint_l4", urdf, &mut meshes.l4);
+    let mut l4 = build_rigid(l4_frame, "foot_joint_l4", urdf, meshes);
     add_collision_points(&mut l4, "l4", urdf);
     let l4_joint = build_joint(
         l4_frame,
@@ -82,7 +85,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r2_frame = "r2";
-    let r2 = build_rigid(r2_frame, "femur_joint_r2", urdf, &mut meshes.r2);
+    let r2 = build_rigid(r2_frame, "femur_joint_r2", urdf, meshes);
     let r2_joint = build_joint(
         r2_frame,
         body_frame,
@@ -93,7 +96,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r4_frame = "r4";
-    let mut r4 = build_rigid(r4_frame, "foot_joint_r4", urdf, &mut meshes.r4);
+    let mut r4 = build_rigid(r4_frame, "foot_joint_r4", urdf, meshes);
     add_collision_points(&mut r4, "r4", urdf);
     let r4_joint = build_joint(
         r4_frame,
@@ -105,7 +108,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let l1_frame = "l1";
-    let l1 = build_rigid(l1_frame, "femur_joint_l1", urdf, &mut meshes.l1);
+    let l1 = build_rigid(l1_frame, "femur_joint_l1", urdf, meshes);
     let l1_joint = build_joint(
         l1_frame,
         body_frame,
@@ -116,7 +119,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let l3_frame = "l3";
-    let mut l3 = build_rigid(l3_frame, "foot_joint_l3", urdf, &mut meshes.l3);
+    let mut l3 = build_rigid(l3_frame, "foot_joint_l3", urdf, meshes);
     add_collision_points(&mut l3, "l3", urdf);
     let l3_joint = build_joint(
         l3_frame,
@@ -128,7 +131,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r1_frame = "r1";
-    let r1 = build_rigid(r1_frame, "femur_joint_r1", urdf, &mut meshes.r1);
+    let r1 = build_rigid(r1_frame, "femur_joint_r1", urdf, meshes);
     let r1_joint = build_joint(
         r1_frame,
         body_frame,
@@ -139,7 +142,7 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
     );
 
     let r3_frame = "r3";
-    let mut r3 = build_rigid(r3_frame, "foot_joint_r3", urdf, &mut meshes.r3);
+    let mut r3 = build_rigid(r3_frame, "foot_joint_r3", urdf, meshes);
     add_collision_points(&mut r3, "r3", urdf);
     let r3_joint = build_joint(
         r3_frame,
@@ -166,40 +169,11 @@ pub fn build_sesame(meshes: &mut SesameMeshes, urdf: &Robot) -> Hybrid {
 #[allow(non_snake_case)]
 #[wasm_bindgen]
 pub async fn createSesame() -> InterfaceHybrid {
-    let mut meshes = SesameMeshes::new();
-
     let urdf_path = "robot.urdf";
     let urdf_file = read_web_file(urdf_path).await;
     let urdf_robot = urdf_rs::read_from_string(&urdf_file).unwrap();
 
-    let file_paths = vec![
-        "mesh/internal_frame.obj",
-        "mesh/femur_joint_l2.obj",
-        "mesh/foot_joint_l4.obj",
-        "mesh/femur_joint_r2.obj",
-        "mesh/foot_joint_r4.obj",
-        "mesh/femur_joint_l1.obj",
-        "mesh/foot_joint_l3.obj",
-        "mesh/femur_joint_r1.obj",
-        "mesh/foot_joint_r3.obj",
-    ];
-    let fetches = file_paths.iter().map(|path| read_web_file(path));
-    let buffers: Vec<String> = join_all(fetches).await;
-    for (i, buf) in buffers.iter().enumerate() {
-        let mesh = Some(RigidMesh::new_from_obj(buf));
-        match i {
-            0 => meshes.body = mesh,
-            1 => meshes.l2 = mesh,
-            2 => meshes.l4 = mesh,
-            3 => meshes.r2 = mesh,
-            4 => meshes.r4 = mesh,
-            5 => meshes.l1 = mesh,
-            6 => meshes.l3 = mesh,
-            7 => meshes.r1 = mesh,
-            8 => meshes.r3 = mesh,
-            _ => panic!("unknown index: {}", i),
-        }
-    }
+    let mut meshes = URDFMeshes::new(&urdf_robot).await;
 
     let mut state = build_sesame(&mut meshes, &urdf_robot);
 

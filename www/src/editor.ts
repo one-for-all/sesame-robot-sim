@@ -102,8 +102,8 @@ document.getElementById("runButton").addEventListener("click", async () => {
   await runCode();
 });
 
-console.log(stand_symbols);
-console.log(stand_ino_bin.length);
+// console.log(stand_symbols);
+// console.log(stand_ino_bin.length);
 
 async function runCode() {
   const runButton = document.getElementById("runButton") as HTMLButtonElement;
