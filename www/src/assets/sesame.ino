@@ -61,9 +61,10 @@ void setup() {
 
 void loop() {
   // runStandPose(1);
-  // runWavePose();
-  runWalkPose();
+  runWavePose();
+  // runWalkPose();
   // runTurnLeft();
+  // runTurnRight();
   // runPushupPose();
   // runWalkBackward();
   // runCrabPose();

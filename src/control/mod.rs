@@ -5,6 +5,7 @@ use esp32rs::{
     servo::MG90S,
     symbols::Symbols,
 };
+use gorilla_physics::interface::util::{read_web_file, read_web_file_bytes};
 use gorilla_physics::{
     hybrid::{articulated::Articulated, control::ArticulatedController},
     joint::{Joint, floating::FloatingJoint},
@@ -50,7 +51,6 @@ impl SesameESP32Controller {
 
         #[cfg(target_arch = "wasm32")]
         {
-            use gorilla_physics::interface::util::{read_web_file, read_web_file_bytes};
             rom1_data = read_web_file_bytes("rom/wokwi/rom1.bin").await;
             rom0_data = read_web_file_bytes("rom/wokwi/rom0.bin").await;
             symbols.add(&read_web_file("rom/symbols.txt").await);
@@ -131,7 +131,7 @@ impl ArticulatedController for SesameESP32Controller {
             self.mg90s[i].vel = v;
             // Note: artificially scale down servo torque.
             // TODO: fix servo torque constant?
-            let torque = self.mg90s[i].torque() * 1.0;
+            let torque = self.mg90s[i].torque() * 0.5;
             torques.push(torque);
         }
 
@@ -140,6 +140,31 @@ impl ArticulatedController for SesameESP32Controller {
         //     println!("target angle: {}", command_angle);
         // }
         DVector::from_vec(torques)
+    }
+
+    fn reboot_esp32(&mut self, app_bin: Vec<u8>, new_symbols: &str) {
+        let mut symbols = self.esp32.symbols.clone();
+        symbols.add(new_symbols);
+
+        let rom1_data: Vec<u8> = self.esp32.rom1_data.clone();
+        let rom0_data: Vec<u8> = self.esp32.rom0_data.clone();
+        let bootloader_data: Vec<u8> = self.esp32.bootloader_data.clone();
+        let partition_table_data: Vec<u8> = self.esp32.partition_table_data.clone();
+        let app_data: Vec<u8> = app_bin;
+
+        let esp32 = ESP32::new(
+            rom1_data,
+            rom0_data,
+            bootloader_data,
+            partition_table_data,
+            app_data,
+            symbols,
+        );
+
+        self.esp32 = esp32;
+        for servo in self.mg90s.iter_mut() {
+            servo.reset();
+        }
     }
 
     fn debug_data(&self) -> Float {

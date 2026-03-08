@@ -57,6 +57,14 @@ const webpackConfig = {
         test: /\.hex$/,
         type: "asset/source",
       },
+      {
+        test: /\.bin$/,
+        loader: "arraybuffer-loader",
+      },
+      {
+        test: /\.txt$/,
+        type: "asset/source",
+      },
     ],
   },
   plugins: [

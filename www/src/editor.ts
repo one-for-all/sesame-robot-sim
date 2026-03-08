@@ -1,10 +1,14 @@
 import * as monaco from "monaco-editor";
 import demo_ino from "./assets/sesame.ino";
 import movement_sequences from "./assets/movement-sequences.h";
-import dummy_ino_hex from "./assets/dummy.ino.hex";
+import stand_ino_bin_buffer from "./assets/stand.ino.bin";
+import stand_symbols from "./assets/stand_symbols.txt";
 import readme from "./assets/README.md";
 import { getSimulator } from ".";
 import AnsiToHtml from "ansi-to-html";
+import JSZip from "jszip";
+
+const stand_ino_bin = new Uint8Array(stand_ino_bin_buffer);
 
 type FileEntry = {
   content: string;
@@ -92,34 +96,14 @@ function getFileIcon(filename: string) {
 }
 
 // Build and Run the code
-const url = "https://arduino-compiler-spl73nlieq-uc.a.run.app";
-
-export interface HexiResult {
-  stdout: string;
-  hex: string;
-  error: string;
-  details: string;
-  returncode: number;
-  success: boolean;
-  size: number;
-}
-
-async function buildHex(source: string) {
-  const resp = await fetch(url + "/compile", {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ sketch: source }),
-  });
-  return (await resp.json()) as HexiResult;
-}
+const url = "https://esp32-compile-api-t2qhjccmsa-uc.a.run.app";
 
 document.getElementById("runButton").addEventListener("click", async () => {
   await runCode();
 });
+
+console.log(stand_symbols);
+console.log(stand_ino_bin.length);
 
 async function runCode() {
   const runButton = document.getElementById("runButton") as HTMLButtonElement;
@@ -132,7 +116,8 @@ async function runCode() {
     files[currentFile].content = editor.getValue();
   }
 
-  const source = files["sesame.ino"].content; // get sesame.ino file content
+  const ino_source = files["sesame.ino"].content; // get sesame.ino file content
+  const header_source = files["movement-sequences.h"].content;
 
   // Disable button and show loading
   runButton.disabled = true;
@@ -143,42 +128,85 @@ async function runCode() {
   outputContent.innerHTML = "<div>Compiling esp32 project...</div>";
 
   try {
-    const result = await buildHex(source);
+    const result = await compileArduinoFromStrings(
+      url,
+      ino_source,
+      header_source,
+    );
 
     let output = "";
-    if (result.stdout) {
-      const ansi = new AnsiToHtml();
-      const html = ansi.toHtml(result.stdout);
-      output += `<div class="stdout">STDOUT:<br>${html}</div>`;
-    }
+    // if (result.stdout) {
+    //   const ansi = new AnsiToHtml();
+    //   const html = ansi.toHtml(result.stdout);
+    //   output += `<div class="stdout">STDOUT:<br>${html}</div>`;
+    // }
 
-    if (result.error) {
-      const ansi = new AnsiToHtml();
-      const html = ansi.toHtml(result.details);
-      output += `<div class="stderr">STDERR:<br>${html}</div>`;
-    }
+    // if (result.error) {
+    //   const ansi = new AnsiToHtml();
+    //   const html = ansi.toHtml(result.details);
+    //   output += `<div class="stderr">STDERR:<br>${html}</div>`;
+    // }
 
-    if (result.hex) {
+    if (result.inoBinBytes) {
       output +=
         '<div class="success">✓ Compile successful!\nbin file generated (' +
-        result.hex.length +
+        result.inoBinBytes.length +
         " bytes)</div>";
-      console.log("Hex output:", result.hex);
+      console.log("Compile output:", result.inoBinBytes);
     }
 
     outputContent.innerHTML =
       output ||
       '<div class="success">Compilation completed successfully!</div>';
 
-    if (!result.error) {
-      let simulator = getSimulator();
-      simulator.hybrid.reset();
-      simulator.hybrid.reboot_code_controller(0, result.hex);
-      // simulator.pendulum_raised = false;
+    // if (!result.error) {
+    //   let simulator = getSimulator();
+    //   simulator.hybrid.reset();
+    //   simulator.hybrid.reboot_code_controller(0, result.hex);
+    //   // simulator.pendulum_raised = false;
+    // }
+    let simulator = getSimulator();
+    simulator.hybrid.reset();
+    let targets = [135, 45, 45, 135, 0, 180, 0, 180];
+    for (let i = 0; i < targets.length; i++) {
+      simulator.hybrid.set_joint_q(i + 1, targets[i] * (Math.PI / 180)); // skip first floating joint
     }
+    simulator.hybrid.reboot_esp32_controller(
+      0,
+      result.inoBinBytes,
+      result.symbolsText,
+    );
   } catch (error) {
-    outputContent.innerHTML =
-      '<div class="stderr">Compile error:\n' + error.message + "</div>";
+    const ansi = new AnsiToHtml();
+    let cleanLog = error.message;
+
+    try {
+      // 1. Extract the JSON part from the error message string
+      const jsonStartIndex = error.message.indexOf("{");
+      if (jsonStartIndex !== -1) {
+        const jsonStr = error.message.substring(jsonStartIndex);
+        const parsed = JSON.parse(jsonStr);
+
+        // 2. Target the specific log property
+        cleanLog =
+          parsed.detail?.compile_log || parsed.detail?.message || error.message;
+      }
+    } catch (e) {
+      // If parsing fails, we just fall back to the raw message
+      console.error("Could not parse error JSON", e);
+    }
+
+    // 3. Convert ANSI to HTML
+    const html = ansi.toHtml(cleanLog);
+
+    // // 4. Use a <pre> tag to preserve terminal formatting
+    // outputContent.innerHTML = `
+    //   <div class="error-container">
+    //     <div class="error-header">Compile Error</div>
+    //     <pre class="stderr">${html}</pre>
+    //   </div>
+    // `;
+    outputContent.innerHTML = `<div class="stderr">Compile error:\n${html}</div>`;
     console.error("Compile error:", error);
   } finally {
     runButton.disabled = false;
@@ -193,6 +221,63 @@ document.getElementById("closeOutput").addEventListener("click", async () => {
 
 document.getElementById("stopButton").addEventListener("click", async () => {
   let simulator = getSimulator();
-  simulator.hybrid.reboot_code_controller(0, dummy_ino_hex);
   simulator.hybrid.reset();
+  let targets = [135, 45, 45, 135, 0, 180, 0, 180];
+  for (let i = 0; i < targets.length; i++) {
+    simulator.hybrid.set_joint_q(i + 1, targets[i] * (Math.PI / 180)); // skip first floating joint
+  }
+  simulator.hybrid.reboot_esp32_controller(0, stand_ino_bin, stand_symbols);
 });
+
+type CompileStringsResult = {
+  inoBinBytes: Uint8Array;
+  symbolsText: string;
+};
+
+async function compileArduinoFromStrings(
+  apiBaseUrl: string,
+  inoSource: string,
+  headerSource: string,
+): Promise<CompileStringsResult> {
+  const form = new FormData();
+  form.set(
+    "ino_file",
+    new Blob([inoSource], { type: "text/plain" }),
+    "sesame.ino",
+  );
+  form.set(
+    "header_file",
+    new Blob([headerSource], { type: "text/plain" }),
+    "movement-sequences.h",
+  );
+
+  const response = await fetch(`${apiBaseUrl.replace(/\/+$/, "")}/compile`, {
+    method: "POST",
+    body: form,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Compile API failed (${response.status}): ${errorText}`);
+  }
+
+  const zipBytes = await response.arrayBuffer();
+  const zip = await JSZip.loadAsync(zipBytes);
+
+  const inoBinFile = Object.values(zip.files).find(
+    (entry) => !entry.dir && entry.name.endsWith(".ino.bin"),
+  );
+  const symbolsFile = zip.file("symbols.txt");
+
+  if (!inoBinFile) {
+    throw new Error("Response zip missing .ino.bin artifact");
+  }
+  if (!symbolsFile) {
+    throw new Error("Response zip missing symbols.txt");
+  }
+
+  const inoBinBytes = await inoBinFile.async("uint8array");
+  const symbolsText = await symbolsFile.async("string");
+
+  return { inoBinBytes, symbolsText };
+}
