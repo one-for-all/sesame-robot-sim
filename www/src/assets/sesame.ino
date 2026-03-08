@@ -11,8 +11,6 @@ int walkCycles = 10;
 // --- CONFIGURATION ---
 // ======================================================================
 Servo servos[8];
-// Sesame Distro Board V2 Pinout
-// const int servoPins[8] = {4, 5, 6, 7, 15, 16, 17, 18};
 
 // Sesame Distro Board Pinout
 const int servoPins[8] = {15, 2, 23, 19, 4, 16, 17, 18};
@@ -55,8 +53,6 @@ void setup() {
     servos[i].attach(servoPins[i], 732, 2929);
   }
   delay(10);
-
-  Serial.println("----------- Setup Done -----------");
 }
 
 void loop() {
@@ -76,7 +72,7 @@ void loop() {
   // runTurnLeft();
   // runTurnRight();
 
-  // The following are not really working. I need to add more collision points for them to look right. But you can still try those for amusement :)
+  // The following are not really working. I need to add more collision points for them to look right. But you can still try those out for amusement :)
   // runShrugPose();
   // runCutePose();
   // runFreakyPose();
@@ -85,6 +81,7 @@ void loop() {
 
 
 // ====== HELPERS ======
+// commented out the funtionalities that are not implemented yet
 void setServoAngle(uint8_t channel, int angle) {
   if (channel < 8) {
     int adjustedAngle = constrain(angle + servoSubtrim[channel], 0, 180);

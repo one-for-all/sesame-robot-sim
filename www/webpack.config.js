@@ -17,7 +17,6 @@ const webpackConfig = {
   entry: {
     index: "./src/index.ts",
     editor: "./src/editor.ts",
-    // keys: "./src/keys.js",
   },
   devtool: isDev ? "inline-source-map" : false,
   output: {
@@ -78,7 +77,7 @@ const webpackConfig = {
       watchDirectories: [
         path.resolve(__dirname, "../../gorilla-physics/src"),
         path.resolve(__dirname, "../../esp32rs/src"),
-        // path.resolve(__dirname, "static"),
+        path.resolve(__dirname, "static"),
       ],
     }),
 

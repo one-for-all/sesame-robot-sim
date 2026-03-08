@@ -1,26 +1,19 @@
-use futures::future::join_all;
 use gorilla_physics::{
     WORLD_FRAME,
     collision::halfspace::HalfSpace,
     hybrid::{
-        Hybrid, Rigid,
-        articulated::Articulated,
-        control::NullArticulatedController,
-        rigid,
-        visual::{Visual, rigid_mesh::RigidMesh},
+        Hybrid, Rigid, articulated::Articulated, control::NullArticulatedController,
+        visual::rigid_mesh::RigidMesh,
     },
-    inertia::SpatialInertia,
     interface::{hybrid::InterfaceHybrid, util::read_web_file},
     joint::Joint,
     na::vector,
     spatial::transform::Transform3D,
     types::Float,
-    util::console_log,
 };
-use nalgebra::{Isometry3, Matrix3, Translation3, UnitQuaternion, Vector, Vector3};
-use urdf_rs::{Geometry, Robot};
+use nalgebra::Vector3;
+use urdf_rs::Robot;
 use wasm_bindgen::prelude::wasm_bindgen;
-use web_sys::console;
 
 use crate::{
     control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
@@ -177,7 +170,7 @@ pub async fn createSesame() -> InterfaceHybrid {
 
     let mut state = build_sesame(&mut meshes, &urdf_robot);
 
-    // let controller = SesameESP32Controller::new().await;
+    let controller = SesameESP32Controller::new().await;
     // let controller = SesameMotionController::new();
     // let controller = SesameServoController::new();
     let controller = NullArticulatedController {};
