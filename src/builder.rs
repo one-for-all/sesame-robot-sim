@@ -173,36 +173,8 @@ pub async fn createSesame() -> InterfaceHybrid {
     let controller = SesameESP32Controller::new().await;
     // let controller = SesameMotionController::new();
     // let controller = SesameServoController::new();
-    let controller = NullArticulatedController {};
+    // let controller = NullArticulatedController {};
     state.set_controller(0, controller);
 
     InterfaceHybrid::new(state)
-}
-
-pub struct SesameMeshes {
-    pub body: Option<RigidMesh>,
-    pub l2: Option<RigidMesh>,
-    pub l4: Option<RigidMesh>,
-    pub r2: Option<RigidMesh>,
-    pub r4: Option<RigidMesh>,
-    pub l1: Option<RigidMesh>,
-    pub l3: Option<RigidMesh>,
-    pub r1: Option<RigidMesh>,
-    pub r3: Option<RigidMesh>,
-}
-
-impl SesameMeshes {
-    pub fn new() -> Self {
-        Self {
-            body: None,
-            l2: None,
-            l4: None,
-            r2: None,
-            r4: None,
-            l1: None,
-            l3: None,
-            r1: None,
-            r3: None,
-        }
-    }
 }

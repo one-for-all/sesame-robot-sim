@@ -2,10 +2,7 @@ use gorilla_physics::{
     hybrid::{control::NullArticulatedController, visual::rigid_mesh::RigidMesh},
     util::read_file,
 };
-use sesame::{
-    builder::{SesameMeshes, build_sesame},
-    control::pid::SesameServoController,
-};
+use sesame::{builder::build_sesame, control::pid::SesameServoController};
 
 fn main() {
     // let urdf_path = "onshape/robot.urdf";
