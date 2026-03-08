@@ -12,4 +12,5 @@ Feature list:
 
 ## Contact
 
-At this stage, it is very likely you will run into bugs or need features. If so, would really appreciate that you send to [jn.sapiens@gmail.com]. Thanks!
+At this stage, it is very likely you will run into bugs or need features.
+If so, would really appreciate that you send to [jn.sapiens@gmail.com]. Will priorize features based on requests. Thanks!

@@ -4,8 +4,6 @@
 
 // Global state for Animation
 String currentCommand = "";
-int frameDelay = 100;
-int walkCycles = 10;
 
 // ======================================================================
 // --- CONFIGURATION ---
@@ -19,6 +17,8 @@ const int servoPins[8] = {15, 2, 23, 19, 4, 16, 17, 18};
 int8_t servoSubtrim[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 // Animation constants
+int frameDelay = 100;
+int walkCycles = 10;
 int motorCurrentDelay = 20; // ms delay between motor movements to prevent over-current
 
 // Prototypes
@@ -72,7 +72,7 @@ void loop() {
   // runTurnLeft();
   // runTurnRight();
 
-  // The following are not really working. I need to add more collision points for them to look right. But you can still try those out for amusement :)
+  // The following are not really working. I need to add more collision points for them to look right. But you can still try these out for amusement :)
   // runShrugPose();
   // runCutePose();
   // runFreakyPose();
@@ -81,7 +81,7 @@ void loop() {
 
 
 // ====== HELPERS ======
-// commented out the funtionalities that are not implemented yet
+// commented out the lines that are not implemented yet
 void setServoAngle(uint8_t channel, int angle) {
   if (channel < 8) {
     int adjustedAngle = constrain(angle + servoSubtrim[channel], 0, 180);
