@@ -170,4 +170,9 @@ impl ArticulatedController for SesameESP32Controller {
     fn debug_data(&self) -> Float {
         if self.mg90s[0].pin_prev { 1. } else { 0. }
     }
+
+    /// Return the content in UART
+    fn get_uart(&self) -> String {
+        String::from_utf8(self.esp32.tx_FIFO.clone()).unwrap()
+    }
 }

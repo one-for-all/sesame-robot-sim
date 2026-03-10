@@ -281,3 +281,16 @@ async function compileArduinoFromStrings(
 
   return { inoBinBytes, symbolsText };
 }
+
+// Show the output div at the beginning
+const outputDiv = document.getElementById("buildOutput");
+outputDiv.classList.add("show");
+
+// Update serial monitor message periodically
+const serialMonitor = document.getElementById("serialMonitor");
+setInterval(() => {
+  let simulator = getSimulator();
+  if (simulator && simulator.hybrid) {
+    serialMonitor.textContent = simulator.hybrid.get_uart();
+  }
+}, 100); // update every 100 ms

@@ -20,13 +20,15 @@ async fn main() {
     let mut data2 = vec![];
 
     let dt = 1e-4;
-    let t_final = 1.0;
+    let t_final = 0.5;
     let num_steps = (t_final / dt) as usize;
     for s in 0..num_steps {
         state.step(dt, &vec![]);
         data2.push(state.controllers[0].debug_data());
         data.push(state.articulated[0].q()[0]);
     }
+
+    println!("{}", state.controllers[0].get_uart());
 
     println!("angle: {}", state.articulated[0].q()[0]);
     plot(&data, dt, "arm angle");
