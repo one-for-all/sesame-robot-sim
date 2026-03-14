@@ -11,6 +11,6 @@ www/static/build/*.hex
 /rom/
 
 www/static/sesame/build/
-/sesame/
+/sesame/build/
 
 esp32.esp32.esp32
