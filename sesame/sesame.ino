@@ -97,7 +97,7 @@ void loop() {
         else if(strcmp(command_buffer, "run rest") == 0 || strcmp(command_buffer, "rn rs") == 0) runRestPose();
         else if(strcmp(command_buffer, "run stand") == 0 || strcmp(command_buffer, "rn st") == 0) runStandPose(1);
         else if(strcmp(command_buffer, "rn wv") == 0) { currentCommand = "wave"; runWavePose(); }
-        else if(strcmp(command_buffer, "rn dn") == 0) { Serial.println("I'm gonna dance"); currentCommand = "dance"; runDancePose(); }
+        else if(strcmp(command_buffer, "rn dn") == 0) { currentCommand = "dance"; runDancePose(); }
         else if(strcmp(command_buffer, "rn sw") == 0) { currentCommand = "swim"; runSwimPose(); }
         else if(strcmp(command_buffer, "rn pt") == 0) { currentCommand = "point"; runPointPose(); }
         else if(strcmp(command_buffer, "rn pu") == 0) { currentCommand = "pushup"; runPushupPose(); }
@@ -233,10 +233,10 @@ bool pressingCheck(String cmd, int ms) {
     // server.handleClient();
     // dnsServer.processNextRequest();
     // updateAnimatedFace();
-    // if (currentCommand != cmd) {
-    //   runStandPose(1);
-    //   return false;
-    // }
+    if (currentCommand != cmd) {
+      runStandPose(1);
+      return false;
+    }
     yield();
   }
   return true;

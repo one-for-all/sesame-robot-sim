@@ -1,4 +1,4 @@
-use std::fs;
+use std::{collections::VecDeque, fs};
 
 use esp32rs::{
     esp32::{CPU_SLOWDOWN_FACTOR, ESP32},
@@ -20,6 +20,8 @@ pub struct SesameESP32Controller {
     pub esp32: ESP32,
     // pub mg90s: MG90S,
     pub mg90s: [MG90S; 8],
+
+    uart_payload: VecDeque<u8>, // data pending to be fed into esp32 uart0
 }
 
 impl SesameESP32Controller {
@@ -75,6 +77,7 @@ impl SesameESP32Controller {
         Self {
             esp32,
             mg90s: [MG90S::new(); 8],
+            uart_payload: VecDeque::new(),
         }
     }
 }
@@ -90,6 +93,9 @@ impl ArticulatedController for SesameESP32Controller {
         let max_count = 1; // 100
         for _ in 0..n_steps {
             self.esp32.step();
+            if let Some(data) = self.uart_payload.pop_front() {
+                self.esp32.feed_uart(data);
+            }
 
             count += 1;
             if count == max_count {
@@ -174,5 +180,10 @@ impl ArticulatedController for SesameESP32Controller {
     /// Return the content in UART
     fn get_uart(&self) -> String {
         String::from_utf8(self.esp32.tx_FIFO.clone()).unwrap()
+    }
+
+    /// Send UART data to esp32
+    fn send_uart(&mut self, payload: &str) {
+        self.uart_payload.extend(String::from(payload).into_bytes());
     }
 }
