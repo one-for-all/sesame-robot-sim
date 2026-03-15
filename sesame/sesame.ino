@@ -168,28 +168,6 @@ void loop() {
       command_buffer[buffer_pos++] = c;
     }
   }
-
-  // runRestPose();
-  // runStandPose(1);
-  // runWavePose();
-  // runSwimPose();
-  // runPointPose();
-  // runPushupPose();
-  // runBowPose();
-  // runWormPose();
-  // runShakePose();
-  // runCrabPose();
-  // runDeadPose();
-  // runWalkPose();
-  // runWalkBackward();
-  // runTurnLeft();
-  // runTurnRight();
-
-  // The following are not really working. I need to add more collision points for them to look right. But you can still try these out for amusement :)
-  // runShrugPose();
-  // runCutePose();
-  // runFreakyPose();
-  // runDancePose();
 }
 
 
