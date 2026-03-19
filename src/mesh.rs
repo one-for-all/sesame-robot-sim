@@ -11,6 +11,12 @@ pub struct URDFMeshes {
 }
 
 impl URDFMeshes {
+    pub fn empty() -> Self {
+        Self {
+            meshes: HashMap::new(),
+        }
+    }
+
     pub async fn new(urdf: &Robot) -> Self {
         let mut meshes: HashMap<String, Vec<(RigidMesh, Isometry3<Float>, Vector3<Float>)>> =
             HashMap::new();
