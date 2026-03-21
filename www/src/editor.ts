@@ -1,14 +1,14 @@
 import * as monaco from "monaco-editor";
 import demo_ino from "./assets/sesame.ino";
 import movement_sequences from "./assets/movement-sequences.h";
-import stand_ino_bin_buffer from "./assets/stand.ino.bin";
-import stand_symbols from "./assets/stand_symbols.txt";
+import default_ino_bin_buffer from "./assets/sesame.ino.bin";
+import default_symbols from "./assets/symbols.txt";
 import readme from "./assets/README.md";
 import { getSimulator } from ".";
 import AnsiToHtml from "ansi-to-html";
 import JSZip from "jszip";
 
-const stand_ino_bin = new Uint8Array(stand_ino_bin_buffer);
+const default_ino_bin = new Uint8Array(default_ino_bin_buffer);
 
 type FileEntry = {
   content: string;
@@ -226,7 +226,7 @@ document.getElementById("stopButton").addEventListener("click", async () => {
   for (let i = 0; i < targets.length; i++) {
     simulator.hybrid.set_joint_q(i + 1, targets[i] * (Math.PI / 180)); // skip first floating joint
   }
-  simulator.hybrid.reboot_esp32_controller(0, stand_ino_bin, stand_symbols);
+  simulator.hybrid.reboot_esp32_controller(0, default_ino_bin, default_symbols);
 });
 
 type CompileStringsResult = {

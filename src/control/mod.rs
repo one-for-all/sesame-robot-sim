@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, fs};
 
 use esp32rs::{
-    esp32::{CPU_SLOWDOWN_FACTOR, ESP32},
+    esp32::{CPU_FREQUENCY, CPU_SLOWDOWN_FACTOR, ESP32},
     servo::MG90S,
     symbols::Symbols,
 };
@@ -15,6 +15,7 @@ use nalgebra::{DVector, dvector};
 
 pub mod motion;
 pub mod pid;
+pub mod servo;
 
 pub struct SesameESP32Controller {
     pub esp32: ESP32,
@@ -49,8 +50,6 @@ impl SesameESP32Controller {
             symbols.add(&read_file("sesame/bootloader_symbols.txt"));
         }
 
-        println!("{:?}", symbols.get(0x3ffe01e0));
-
         #[cfg(target_arch = "wasm32")]
         {
             rom1_data = read_web_file_bytes("rom/wokwi/rom1.bin").await;
@@ -84,13 +83,14 @@ impl SesameESP32Controller {
 
 impl ArticulatedController for SesameESP32Controller {
     fn step(&mut self, dt: Float, articulated: &Articulated) {
-        let Hz = (240_000_000 / CPU_SLOWDOWN_FACTOR) as Float; // 240 Mhz
+        // let Hz = (240_000_000 / CPU_SLOWDOWN_FACTOR) as Float; // 240 Mhz
+        let Hz = ((CPU_FREQUENCY * 1000_000) / CPU_SLOWDOWN_FACTOR) as Float;
         let n_steps = (dt * Hz) as usize;
 
         let pins = [15, 2, 23, 19, 4, 16, 17, 18];
 
         let mut count = 0;
-        let max_count = 1; // 100
+        let max_count = 10; // 100
         for _ in 0..n_steps {
             self.esp32.step();
             if let Some(data) = self.uart_payload.pop_front() {
@@ -176,6 +176,17 @@ impl ArticulatedController for SesameESP32Controller {
     fn debug_data(&self) -> Float {
         if self.mg90s[0].pin_prev { 1. } else { 0. }
     }
+
+    // fn debug(&mut self) {
+    //     let mut sorted_counts: Vec<_> = self.esp32.instr_counter.clone().into_iter().collect();
+    //     sorted_counts.sort_by(|a, b| b.1.cmp(&a.1));
+    //     let top_variants = sorted_counts.iter().take(20);
+
+    //     println!("--- Top 20 Variants ---");
+    //     for (fruit, count) in top_variants {
+    //         println!("{:?}: {}", fruit, count);
+    //     }
+    // }
 
     /// Return the content in UART
     fn get_uart(&self) -> String {
