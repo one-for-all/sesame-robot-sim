@@ -2,7 +2,7 @@
 
 This is an end-to-end simulation of Dorian Todd's [Sesame Robot](https://github.com/dorianborian/sesame-robot).
 
-You can write code to change its bahavior, or you can send pre-defined commands such as "run walk" to make it walk.
+You can write code to change its bahavior, or you can send pre-defined commands such as "run walk" to make it walk (see code in loop() for other commands). 
 
 It is currently very rudimentary. But hopefully this simulator can make it safer and faster to program motion sequences of the robot.
 

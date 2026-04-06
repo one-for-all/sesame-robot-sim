@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "../..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "build.partitions=partitions_factory_only",
+  "fqbn": "esp32_2:esp32:esp32:CPUFreq=80",
+  "hardwareFolders": "/Users/jay/Library/Arduino15/packages",
+  "otherLibrariesFolders": "/Users/jay/Documents/Arduino/libraries",
+  "sketchLocation": "/Users/jay/Developer/ape/robot_sim/sesame-robot-sim/sesame"
+}

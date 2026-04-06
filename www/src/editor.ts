@@ -1,10 +1,10 @@
+import { getSimulator } from ".";
 import * as monaco from "monaco-editor";
 import demo_ino from "./assets/sesame.ino";
 import movement_sequences from "./assets/movement-sequences.h";
 import default_ino_bin_buffer from "./assets/sesame.ino.bin";
 import default_symbols from "./assets/symbols.txt";
 import readme from "./assets/README.md";
-import { getSimulator } from ".";
 import AnsiToHtml from "ansi-to-html";
 import JSZip from "jszip";
 
@@ -102,10 +102,12 @@ document.getElementById("runButton").addEventListener("click", async () => {
   await runCode();
 });
 
-// console.log(stand_symbols);
-// console.log(stand_ino_bin.length);
-
 async function runCode() {
+  let simulator = getSimulator();
+  if (simulator == null) {
+    return;
+  }
+
   const runButton = document.getElementById("runButton") as HTMLButtonElement;
   const stopButton = document.getElementById("stopButton") as HTMLButtonElement;
   const outputDiv = document.getElementById("buildOutput");
@@ -152,7 +154,6 @@ async function runCode() {
         '<div class="success">✓ Compile successful!\nbin file generated (' +
         result.inoBinBytes.length +
         " bytes)</div>";
-      console.log("Compile output:", result.inoBinBytes);
     }
 
     outputContent.innerHTML =
@@ -165,7 +166,6 @@ async function runCode() {
     //   simulator.hybrid.reboot_code_controller(0, result.hex);
     //   // simulator.pendulum_raised = false;
     // }
-    let simulator = getSimulator();
     simulator.hybrid.reset();
     let targets = [135, 45, 45, 135, 0, 180, 0, 180];
     for (let i = 0; i < targets.length; i++) {
@@ -210,7 +210,7 @@ async function runCode() {
     console.error("Compile error:", error);
   } finally {
     runButton.disabled = false;
-    runButton.innerHTML = "<span>🔨</span><span>Run</span>";
+    runButton.innerHTML = "<span>🔨</span><span>Compile</span>";
     stopButton.disabled = false;
   }
 }
@@ -221,6 +221,9 @@ document.getElementById("closeOutput").addEventListener("click", async () => {
 
 document.getElementById("stopButton").addEventListener("click", async () => {
   let simulator = getSimulator();
+  if (simulator == null) {
+    return;
+  }
   simulator.hybrid.reset();
   let targets = [135, 45, 45, 135, 0, 180, 0, 180];
   for (let i = 0; i < targets.length; i++) {
