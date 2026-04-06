@@ -47,35 +47,6 @@ pub fn build_rigid(frame: &str, link_name: &str, urdf: &Robot, meshes: &mut URDF
                 .push((Visual::RigidMesh(mesh), iso, Some(color)));
         }
     }
-
-    // if let Some(mesh) = meshes.take() {
-    //     let visual = link_urdf
-    //         .visual
-    //         .iter()
-    //         .find(|&v| match &v.geometry {
-    //             Geometry::Mesh { filename, .. } => filename.contains(link_name),
-    //             _ => false,
-    //         })
-    //         .unwrap();
-    //     let [r, p, y] = visual.origin.rpy.0;
-    //     let iso = Isometry3::from_parts(
-    //         Translation3::from(visual.origin.xyz.0),
-    //         UnitQuaternion::from_euler_angles(r, p, y),
-    //     );
-    //     let [r, g, b, _] = visual
-    //         .material
-    //         .as_ref()
-    //         .unwrap()
-    //         .color
-    //         .as_ref()
-    //         .unwrap()
-    //         .rgba
-    //         .0;
-    //     let color = vector![r, g, b];
-    //     body.visual
-    //         .push((Visual::RigidMesh(mesh), iso, Some(color)));
-    // }
-
     body
 }
 
@@ -101,7 +72,7 @@ pub fn build_joint(
     joint
 }
 
-pub fn add_collision_points(rigid: &mut Rigid, frame: &str, urdf: &Robot) {
+pub fn add_sesame_foot_collision_points(rigid: &mut Rigid, frame: &str, urdf: &Robot) {
     for i in 1..5 {
         let point_frame_name = format!("{}_p{}_frame", frame, i);
         let point_joint = urdf

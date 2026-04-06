@@ -1,7 +1,7 @@
 use esp32rs::{
     Float, PI,
     plot::plot,
-    servo::{MG90S, MG90S_MAX_TORQUE},
+    servo::mg90s::{MG90S, MG90S_MAX_TORQUE},
 };
 use gorilla_physics::{
     WORLD_FRAME,

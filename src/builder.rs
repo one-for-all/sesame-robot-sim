@@ -18,7 +18,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::{
     control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
     mesh::URDFMeshes,
-    util::{add_collision_points, build_joint, build_rigid},
+    util::{add_sesame_foot_collision_points, build_joint, build_rigid},
 };
 
 pub fn build_arms() -> Hybrid {
@@ -67,7 +67,7 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
 
     let l4_frame = "l4";
     let mut l4 = build_rigid(l4_frame, "foot_joint_l4", urdf, meshes);
-    add_collision_points(&mut l4, "l4", urdf);
+    add_sesame_foot_collision_points(&mut l4, "l4", urdf);
     let l4_joint = build_joint(
         l4_frame,
         l2_frame,
@@ -90,7 +90,7 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
 
     let r4_frame = "r4";
     let mut r4 = build_rigid(r4_frame, "foot_joint_r4", urdf, meshes);
-    add_collision_points(&mut r4, "r4", urdf);
+    add_sesame_foot_collision_points(&mut r4, "r4", urdf);
     let r4_joint = build_joint(
         r4_frame,
         r2_frame,
@@ -113,7 +113,7 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
 
     let l3_frame = "l3";
     let mut l3 = build_rigid(l3_frame, "foot_joint_l3", urdf, meshes);
-    add_collision_points(&mut l3, "l3", urdf);
+    add_sesame_foot_collision_points(&mut l3, "l3", urdf);
     let l3_joint = build_joint(
         l3_frame,
         l1_frame,
@@ -136,7 +136,7 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
 
     let r3_frame = "r3";
     let mut r3 = build_rigid(r3_frame, "foot_joint_r3", urdf, meshes);
-    add_collision_points(&mut r3, "r3", urdf);
+    add_sesame_foot_collision_points(&mut r3, "r3", urdf);
     let r3_joint = build_joint(
         r3_frame,
         r1_frame,

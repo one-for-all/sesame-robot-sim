@@ -1,4 +1,4 @@
-use esp32rs::{Float, PI, servo::MG90S};
+use esp32rs::{Float, PI, servo::mg90s::MG90S};
 use gorilla_physics::hybrid::{articulated::Articulated, control::ArticulatedController};
 use nalgebra::{DVector, dvector};
 

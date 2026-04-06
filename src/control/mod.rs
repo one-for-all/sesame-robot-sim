@@ -2,10 +2,9 @@ use std::{collections::VecDeque, fs};
 
 use esp32rs::{
     esp32::{CPU_FREQUENCY, CPU_SLOWDOWN_FACTOR, ESP32},
-    servo::MG90S,
+    servo::mg90s::MG90S,
     symbols::Symbols,
 };
-use gorilla_physics::interface::util::{read_web_file, read_web_file_bytes};
 use gorilla_physics::{
     hybrid::{articulated::Articulated, control::ArticulatedController},
     joint::{Joint, floating::FloatingJoint},
@@ -52,6 +51,9 @@ impl SesameESP32Controller {
 
         #[cfg(target_arch = "wasm32")]
         {
+            use gorilla_physics::interface::util::read_web_file;
+            use gorilla_physics::interface::util::read_web_file_bytes;
+
             rom1_data = read_web_file_bytes("rom/wokwi/rom1.bin").await;
             rom0_data = read_web_file_bytes("rom/wokwi/rom0.bin").await;
             symbols.add(&read_web_file("rom/symbols.txt").await);

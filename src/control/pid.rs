@@ -1,6 +1,6 @@
 use std::{f64::consts::PI, vec};
 
-use esp32rs::servo::{MG90S_MAX_SPEED, MG90S_MAX_TORQUE};
+use esp32rs::servo::mg90s::{MG90S_MAX_SPEED, MG90S_MAX_TORQUE};
 use gorilla_physics::{
     hybrid::{articulated::Articulated, control::ArticulatedController},
     types::Float,
