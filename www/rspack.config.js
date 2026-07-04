@@ -80,7 +80,17 @@ const rspackConfig = {
   },
   plugins: [
     new CopyRspackPlugin({
-      patterns: [{ from: "static", to: dist }],
+      patterns: [
+        {
+          from: "static",
+          to: dist,
+          globOptions: {
+            // Raw `.obj` meshes are fetched pre-gzipped (`.obj.gz`) at runtime,
+            // so don't ship the uncompressed originals.
+            ignore: ["**/mesh/*.obj"],
+          },
+        },
+      ],
     }),
 
     new WasmPackPlugin({
@@ -102,10 +112,12 @@ const rspackConfig = {
   performance: {
     hints: false,
   },
-  cache: isDev ? {
-    type: "persistent",
-    buildDependencies: [__filename],
-  } : false,
+  cache: isDev
+    ? {
+        type: "persistent",
+        buildDependencies: [__filename],
+      }
+    : false,
 };
 
 module.exports = rspackConfig;
