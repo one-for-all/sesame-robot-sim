@@ -240,3 +240,39 @@
         transform: rotate(360deg);
     }
 }
+
+/* ── Collaboration Logos ─────────────────────────── */
+.header-logos {
+    position: absolute;
+    top: 0px; /* Adjust as needed for vertical alignment with other elements */
+    right: 0px;
+    display: flex;
+    align-items: center;
+    z-index: 3; /* Higher z-index to ensure it's on top */
+    height: 24px;
+    flex-direction: row;
+}
+
+#ape-logo {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    font-size: 16px; /* Slightly larger to match potential image height */
+    font-weight: bold;
+    color: #007acc; /* A common blue from the project's theme */
+    text-decoration: none;
+    transition: color 0.2s;
+    background-color: white;
+    padding: 0px 5px;
+    border-bottom-left-radius: 2px;
+}
+
+#ape-logo-img {
+    display: flex;
+    align-items: center;
+    height: 22px; /* Match the height of the APE logo text */
+    width: auto; /* Maintain aspect ratio */
+    cursor: pointer;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
