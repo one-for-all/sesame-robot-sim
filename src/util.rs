@@ -1,6 +1,7 @@
 use gorilla_physics::{
     hybrid::{
         Rigid,
+        mesh::URDFMeshes,
         visual::{Visual, rigid_mesh::RigidMesh},
     },
     inertia::SpatialInertia,
@@ -12,8 +13,6 @@ use nalgebra::{
     Isometry3, Matrix3, Translation3, UnitQuaternion, UnitVector3, Vector, Vector3, vector,
 };
 use urdf_rs::{Geometry, Robot};
-
-use crate::mesh::URDFMeshes;
 
 pub fn build_rigid(frame: &str, link_name: &str, urdf: &Robot, meshes: &mut URDFMeshes) -> Rigid {
     let link_urdf = urdf.links.iter().find(|&l| l.name == link_name).unwrap();

@@ -3,7 +3,7 @@ use gorilla_physics::{
     collision::halfspace::HalfSpace,
     hybrid::{
         Hybrid, Rigid, articulated::Articulated, control::NullArticulatedController,
-        visual::rigid_mesh::RigidMesh,
+        mesh::URDFMeshes, visual::rigid_mesh::RigidMesh,
     },
     interface::{hybrid::InterfaceHybrid, util::read_web_file},
     joint::Joint,
@@ -17,7 +17,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
     control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
-    mesh::URDFMeshes,
     util::{add_sesame_foot_collision_points, build_joint, build_rigid},
 };
 
