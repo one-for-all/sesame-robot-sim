@@ -18,6 +18,11 @@ import("sesame").then((furuta) => {
     simulator.run(50, 0); // 10
 
     setSimulator(simulator);
+
+    const loadingUI = document.getElementById("loading");
+    if (loadingUI) {
+      loadingUI.remove();
+    }
   });
 });
 
