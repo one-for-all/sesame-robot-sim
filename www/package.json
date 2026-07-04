@@ -6,9 +6,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rimraf ../docs pkg && webpack",
-    "start": "webpack serve --open --node-env development",
-    "prod": "webpack serve --open --node-env production",
+    "build": "rimraf ../docs pkg && rspack",
+    "start": "rspack serve --open --node-env development",
+    "prod": "rspack serve --open --node-env production",
+    "preview": "rspack preview",
     "build:gpu": "FEATURE_GPU=1 npm run build",
     "start:gpu": "FEATURE_GPU=1 npm run start",
     "prod:gpu": "FEATURE_GPU=1 npm run prod"
@@ -23,19 +24,17 @@
     "three": "^0.152.0"
   },
   "devDependencies": {
+    "@rspack/cli": "^2.1.2",
+    "@rspack/core": "^2.1.2",
+    "@rspack/dev-server": "^2.1.0",
     "@types/three": "^0.144.0",
     "@wasm-tool/wasm-pack-plugin": "^1.1.0",
     "arraybuffer-loader": "^1.0.8",
-    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^7.1.4",
     "postcss": "^8.5.8",
     "postcss-loader": "^8.2.1",
     "rimraf": "^3.0.2",
     "style-loader": "^4.0.0",
-    "ts-loader": "^9.4.1",
-    "typescript": "^4.8.4",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.11.1"
+    "typescript": "^4.8.4"
   }
 }
