@@ -206,9 +206,9 @@ dependencies = [
 
 [[package]]
 name = "clarabel"
-version = "0.10.0"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4774f2d1bda27fc0ac5caa136ba5e682f7b002aee1e1fe7f9e2d9219e7a81cb3"
+checksum = "d950c870fad4feed732bc3f7da489d223ba3911eac0522e6512eed7e659cfafe"
 dependencies = [
  "amd",
  "cfg-if",
@@ -218,6 +218,7 @@ dependencies = [
  "lazy_static",
  "num-traits",
  "serde",
+ "serde-big-array",
  "serde_json",
  "thiserror 1.0.69",
  "web-time",
@@ -249,6 +250,12 @@ dependencies = [
  "cfg-if",
  "wasm-bindgen",
 ]
+
+[[package]]
+name = "constcat"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "136d3e02915a2cea4d74caa8681e2d44b1c3254bdbf17d11d41d587ff858832c"
 
 [[package]]
 name = "core-foundation"
@@ -549,6 +556,7 @@ name = "esp32rs"
 version = "0.1.0"
 dependencies = [
  "array-concat",
+ "constcat",
  "ctrlc",
  "num_enum",
  "plotters",
@@ -854,6 +862,7 @@ dependencies = [
  "cfg-if",
  "clarabel",
  "console_error_panic_hook",
+ "flate2",
  "flume",
  "futures",
  "getrandom 0.3.4",
@@ -1833,6 +1842,15 @@ checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
  "serde_derive",
+]
+
+[[package]]
+name = "serde-big-array"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11fc7cc2c76d73e0f27ee52abbd64eec84d46f370c88371120433196934e4b7f"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
