@@ -1,12 +1,14 @@
 use std::time::Instant;
 
 use esp32rs::{log::init_logging, plot::plot, util::read_file};
-use gorilla_physics::{hybrid::control::NullArticulatedController, types::Float};
+use gorilla_physics::{
+    hybrid::{control::NullArticulatedController, mesh::URDFMeshes},
+    types::Float,
+};
 use nalgebra::Vector;
 use sesame::{
     builder::{build_arms, build_sesame},
     control::{SesameESP32Controller, pid::SesameServoController, servo::MG90SController},
-    mesh::URDFMeshes,
 };
 
 #[tokio::main]

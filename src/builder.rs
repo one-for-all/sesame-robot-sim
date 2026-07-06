@@ -1,11 +1,7 @@
 use gorilla_physics::{
     WORLD_FRAME,
     collision::halfspace::HalfSpace,
-    hybrid::{
-        Hybrid, Rigid, articulated::Articulated, control::NullArticulatedController,
-        mesh::URDFMeshes, visual::rigid_mesh::RigidMesh,
-    },
-    interface::{hybrid::InterfaceHybrid, util::read_web_file},
+    hybrid::{Hybrid, Rigid, articulated::Articulated, mesh::URDFMeshes},
     joint::Joint,
     na::vector,
     spatial::transform::Transform3D,
@@ -13,11 +9,16 @@ use gorilla_physics::{
 };
 use nalgebra::Vector3;
 use urdf_rs::Robot;
-use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{
-    control::{SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController},
-    util::{add_sesame_foot_collision_points, build_joint, build_rigid},
+use crate::util::{add_sesame_foot_collision_points, build_joint, build_rigid};
+
+#[cfg(any(target_arch = "wasm32", rust_analyzer))]
+use {
+    crate::control::{
+        SesameESP32Controller, motion::SesameMotionController, pid::SesameServoController,
+    },
+    gorilla_physics::interface::{hybrid::InterfaceHybrid, util::read_web_file},
+    wasm_bindgen::prelude::wasm_bindgen,
 };
 
 pub fn build_arms() -> Hybrid {
@@ -157,7 +158,7 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
     state
 }
 
-// #[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", rust_analyzer))]
 #[allow(non_snake_case)]
 #[wasm_bindgen]
 pub async fn createSesame() -> InterfaceHybrid {
