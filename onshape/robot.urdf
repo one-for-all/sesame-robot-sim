@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
-<!-- Generated using onshape-to-robot -->
-<!-- Onshape https://cad.onshape.com/documents/b79f0bd00a8a2992e122c486/w/07a88731be16e1121125e6c3/e/ecd0205f62be89dd8084d827 -->
-<robot name="onshape">
+
+<robot name="sesame">
   <!-- Link internal_frame -->
   <link name="internal_frame">
     <inertial>
@@ -470,6 +469,66 @@
       </material>
     </visual>
   </link>
+  <!-- Frame base_p1 (dummy link + fixed joint) -->
+  <link name="base_p1">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="base_p1_frame" type="fixed">
+    <origin xyz="-0.0371484 -0.0221984 -0.0161141" rpy="0 -0 0"/>
+    <parent link="internal_frame"/>
+    <child link="base_p1"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  <!-- Frame base_p2 (dummy link + fixed joint) -->
+  <link name="base_p2">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="base_p2_frame" type="fixed">
+    <origin xyz="-0.0371484 0.0126536 -0.0161141" rpy="0 -0 0"/>
+    <parent link="internal_frame"/>
+    <child link="base_p2"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  <!-- Frame base_p3 (dummy link + fixed joint) -->
+  <link name="base_p3">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="base_p3_frame" type="fixed">
+    <origin xyz="0.0349327 0.0126536 -0.0161141" rpy="0 -0 0"/>
+    <parent link="internal_frame"/>
+    <child link="base_p3"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  <!-- Frame base_p4 (dummy link + fixed joint) -->
+  <link name="base_p4">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="base_p4_frame" type="fixed">
+    <origin xyz="0.0349327 -0.0221984 -0.0161141" rpy="3.14159 -0 0"/>
+    <parent link="internal_frame"/>
+    <child link="base_p4"/>
+    <axis xyz="0 0 0"/>
+  </joint>
   <!-- Link femur_joint_l2 -->
   <link name="femur_joint_l2">
     <inertial>

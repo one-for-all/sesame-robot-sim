@@ -10,7 +10,9 @@ use gorilla_physics::{
 use nalgebra::Vector3;
 use urdf_rs::Robot;
 
-use crate::util::{add_sesame_foot_collision_points, build_joint, build_rigid};
+use crate::util::{
+    add_sesame_base_collision_points, add_sesame_foot_collision_points, build_joint, build_rigid,
+};
 
 #[cfg(any(target_arch = "wasm32", rust_analyzer))]
 use {
@@ -51,7 +53,8 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
     state.add_halfspace(HalfSpace::new(Vector3::z_axis(), 0.));
 
     let body_frame = "body";
-    let body = build_rigid(body_frame, "internal_frame", urdf, meshes);
+    let mut body = build_rigid(body_frame, "internal_frame", urdf, meshes);
+    add_sesame_base_collision_points(&mut body, urdf);
     let body_joint = Joint::new_floating(Transform3D::move_z(body_frame, WORLD_FRAME, 0.05));
 
     let l2_frame = "l2";
@@ -146,13 +149,14 @@ pub fn build_sesame(meshes: &mut URDFMeshes, urdf: &Robot) -> Hybrid {
         (180. as Float).to_radians(),
     );
 
-    let articulated = Articulated::new(
+    let mut articulated = Articulated::new(
         vec![body, r1, r2, l1, l2, r4, r3, l3, l4],
         vec![
             body_joint, r1_joint, r2_joint, l1_joint, l2_joint, r4_joint, r3_joint, l3_joint,
             l4_joint,
         ],
     );
+    articulated.show_visual = false;
     state.add_articulated(articulated);
 
     state

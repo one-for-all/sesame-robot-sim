@@ -82,3 +82,15 @@ pub fn add_sesame_foot_collision_points(rigid: &mut Rigid, frame: &str, urdf: &R
         rigid.add_point_at(&Vector3::from(point_joint.origin.xyz.0));
     }
 }
+
+pub fn add_sesame_base_collision_points(rigid: &mut Rigid, urdf: &Robot) {
+    for i in 1..5 {
+        let point_frame_name = format!("base_p{}_frame", i);
+        let point_joint = urdf
+            .joints
+            .iter()
+            .find(|&j| j.name == point_frame_name)
+            .unwrap();
+        rigid.add_point_at(&Vector3::from(point_joint.origin.xyz.0));
+    }
+}
