@@ -21,9 +21,15 @@ import("sesame").then((furuta) => {
     };
     simulator.graphics.lookAt(cameraPosition);
 
-    simulator.run(50, 0); // 10
+    simulator.run(70, 0); // 10
 
     setSimulator(simulator);
+
+    setInterval(() => {
+      const realtimeRatio = document.getElementById("realtimeRatio");
+      realtimeRatio.innerHTML =
+        "realtime rate: " + simulator.realtimeRatio.toFixed(2);
+    }, 500);
 
     const loadingUI = document.getElementById("loading");
     if (loadingUI) {
