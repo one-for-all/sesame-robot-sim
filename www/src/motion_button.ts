@@ -23,6 +23,23 @@ function createMotionButton(payload: string, label: string) {
 const motions = [
   { payload: "rn wf", label: "Walk" },
   { payload: "rn wb", label: "Backward" },
+  { payload: "rn tl", label: "Turn Left" },
+  { payload: "rn tr", label: "Turn Right" },
+  { payload: "rn rs", label: "Rest" },
+  { payload: "rn st", label: "Stand" },
+  { payload: "rn wv", label: "Wave" },
+  { payload: "rn dn", label: "Dance" },
+  { payload: "rn sw", label: "Swim" },
+  { payload: "rn pt", label: "Point" },
+  { payload: "rn pu", label: "Pushup" },
+  { payload: "rn bw", label: "Bow" },
+  { payload: "rn ct", label: "Cute" },
+  { payload: "rn fk", label: "Freaky" },
+  { payload: "rn wm", label: "Worm" },
+  { payload: "rn sk", label: "Shake" },
+  { payload: "rn sg", label: "Shrug" },
+  { payload: "rn dd", label: "Dead" },
+  { payload: "rn cb", label: "Crab" },
 ];
 
 for (const { payload, label } of motions) {
