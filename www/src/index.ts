@@ -1,5 +1,6 @@
 import { createSesame } from "sesame";
 import { Simulator } from "gorilla-physics-ui";
+import "./motion_button";
 
 import("sesame").then((furuta) => {
   createSesame().then((state) => {
