@@ -1,4 +1,4 @@
-import { getSimulator } from "./index";
+import { getSimulator } from "./sim";
 
 const container = document.getElementById("movementButtonContainer");
 

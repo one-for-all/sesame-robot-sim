@@ -1,49 +1,57 @@
-import { createSesame } from "sesame";
-import { Simulator } from "gorilla-physics-ui";
+// Import CSS
+import "chimpanzee-ui/css";
+
+import { initSimulator } from "./sim";
+import "./editor";
 import "./motion_button";
-import { isPhoneUA } from "chimpanzee-ui";
+import "./wasd";
+import { files, inoFileName, resetFiles } from "./files";
+import { openFile } from "./editor";
+import "./compile";
+import "./reset";
+import { renderExplorer } from "./explorer";
+import { renderFileBar } from "./filebar";
+import { setupDownload } from "./download";
+import { getSimulator } from "./sim";
+import { createSerialMonitorPanel, setupResize } from "chimpanzee-ui";
+import { updateUIforMode, isPhoneUA } from "chimpanzee-ui";
 
 if (isPhoneUA()) {
-  document.getElementById("editorContainer").classList.add("hidden");
+  document.getElementById("explorer").classList.add("hidden");
+  document.getElementById("editorContainer").style.flex = `0 0 10px`;
 }
 
-import("sesame").then((furuta) => {
-  createSesame().then((state) => {
-    let interfaceSimulator = null;
-    let simulator = new Simulator(interfaceSimulator);
+updateUIforMode();
+setupResize();
 
-    simulator.addHybrid(state);
-    simulator.updateHybrid();
+initSimulator();
+const panel = createSerialMonitorPanel({ getSimulator });
+openFile(inoFileName());
+setupDownload();
 
-    let cameraPosition = {
-      eye: { x: -0.5, y: 0.0, z: 0.1 },
-      target: { x: 0.0, y: 0, z: 0 },
-    };
-    simulator.graphics.lookAt(cameraPosition);
-
-    simulator.run(70, 0); // 10
-
-    setSimulator(simulator);
-
-    setInterval(() => {
-      const realtimeRatio = document.getElementById("realtimeRatio");
-      realtimeRatio.innerHTML =
-        "realtime rate: " + simulator.realtimeRatio.toFixed(2);
-    }, 500);
-
-    const loadingUI = document.getElementById("loading");
-    if (loadingUI) {
-      loadingUI.remove();
-    }
+document
+  .getElementById("projectDialogButton")!
+  .addEventListener("click", () => {
+    const dialog = document.getElementById("projectDialog")!;
+    dialog.classList.toggle("hidden");
   });
+
+document.getElementById("createProjectBtn")!.addEventListener("click", () => {
+  resetFiles();
+  renderExplorer();
+  renderFileBar();
+  openFile(inoFileName());
+  document.getElementById("projectDialog")!.classList.add("hidden");
 });
 
-let _simulator: Simulator | null = null;
-
-function setSimulator(sim: Simulator) {
-  _simulator = sim;
-}
-
-export function getSimulator(): Simulator | null {
-  return _simulator;
-}
+document.getElementById("newFileBtn")!.addEventListener("click", () => {
+  const filename = "untitled";
+  files[filename] = {
+    content: "",
+    language: "cpp",
+  };
+  renderExplorer();
+  renderFileBar();
+  openFile(filename);
+  document.getElementById("projectDialog")!.classList.add("hidden");
+});

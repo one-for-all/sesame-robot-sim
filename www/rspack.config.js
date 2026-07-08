@@ -1,4 +1,4 @@
-const { CopyRspackPlugin } = require("@rspack/core");
+const { CopyRspackPlugin, HtmlRspackPlugin } = require("@rspack/core");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
@@ -13,14 +13,12 @@ const featureGPU = process.env.FEATURE_GPU === "1";
  */
 const rspackConfig = {
   mode: isDev ? "development" : "production",
-  entry: {
-    index: "./src/index.ts",
-    editor: "./src/editor.ts",
-  },
+  entry: "./src/index.ts",
   devtool: isDev ? "inline-source-map" : false,
   output: {
     path: dist,
     filename: "[name].js",
+    clean: true,
   },
   resolve: {
     extensions: [".ts", ".js"],
@@ -87,10 +85,14 @@ const rspackConfig = {
           globOptions: {
             // Raw `.obj` meshes are fetched pre-gzipped (`.obj.gz`) at runtime,
             // so don't ship the uncompressed originals.
-            ignore: ["**/mesh/*.obj"],
+            ignore: ["**/index.html", "**/mesh/*.obj"],
           },
         },
       ],
+    }),
+
+    new HtmlRspackPlugin({
+      template: "./static/index.html",
     }),
 
     new WasmPackPlugin({
