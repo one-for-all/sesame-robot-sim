@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="overlay.css" />
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="editorContainer">
             <div class="file-bar" id="fileBar">
                 <button class="run-button" id="runButton">
                     <span>🔨</span>
@@ -40,28 +40,24 @@
                 </button>
             </div>
             <div id="editor"></div>
-            <div class="build-output" id="buildOutput">
-                <button class="close-output" id="closeOutput">×</button>
-                <div id="outputContent"></div>
-                <div id="serialMonitor"></div>
-            </div>
-            <div class="serial-input-bar" id="serialInputBar">
-                <input
-                    class="serial-input"
-                    id="serialInput"
-                    type="text"
-                    placeholder="serial monitor input..."
-                    autocomplete="off"
-                    spellcheck="false"
-                />
-                <button
-                    class="serial-send"
-                    id="serialSend"
-                    title="Send (Enter)"
-                >
-                    Send
-                </button>
-            </div>
+        </div>
+        <div class="build-output" id="buildOutput">
+            <button class="close-output" id="closeOutput">×</button>
+            <div id="outputContent"></div>
+            <div id="serialMonitor"></div>
+        </div>
+        <div class="serial-input-bar" id="serialInputBar">
+            <input
+                class="serial-input"
+                id="serialInput"
+                type="text"
+                placeholder="serial monitor input..."
+                autocomplete="off"
+                spellcheck="false"
+            />
+            <button class="serial-send" id="serialSend" title="Send (Enter)">
+                Send
+            </button>
         </div>
         <div id="threejs">
             <div id="loading" class="loading-overlay">
@@ -81,6 +77,7 @@
                     </a>
                 </div>
             </div>
+            <div id="realtimeRatio">realtime rate: 1.0</div>
             <div
                 class="movement-button-container"
                 id="movementButtonContainer"
