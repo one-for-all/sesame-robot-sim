@@ -1,6 +1,11 @@
 import { createSesame } from "sesame";
 import { Simulator } from "gorilla-physics-ui";
 import "./motion_button";
+import { isPhoneUA } from "chimpanzee-ui";
+
+if (isPhoneUA()) {
+  document.getElementById("editorContainer").classList.add("hidden");
+}
 
 import("sesame").then((furuta) => {
   createSesame().then((state) => {
