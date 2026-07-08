@@ -5,11 +5,28 @@ import { currentFile, files, inoFileName } from "./files";
 import { editor } from "./editor";
 
 // Build and Run the code
-const url = "https://esp32-compile-api-t2qhjccmsa-uc.a.run.app";
+const url =
+  "https://esp32-compile-api-v2-0-12-452188812531.us-central1.run.app";
 
 document.getElementById("runButton").addEventListener("click", async () => {
   await compileCode();
 });
+
+async function buildZipBuffer(): Promise<ArrayBuffer> {
+  const zip = new JSZip();
+
+  // Do not zip the following files inside src directory
+  let zip_file_names = Object.keys(files).filter(
+    (key) => key != "README.md" && !key.endsWith(".ino"),
+  );
+
+  zip_file_names.forEach((zip_file_name) => {
+    zip.file(zip_file_name, files[zip_file_name].content);
+  });
+
+  // Generate the zip as an ArrayBuffer
+  return await zip.generateAsync({ type: "arraybuffer" });
+}
 
 async function compileCode() {
   const runButton = document.getElementById("runButton") as HTMLButtonElement;
@@ -24,7 +41,6 @@ async function compileCode() {
   }
 
   const ino_source = files[inoFileName()].content;
-  const header_source = files["movement-sequences.h"].content;
 
   // Disable button and show loading
   runButton.disabled = true;
@@ -36,11 +52,9 @@ async function compileCode() {
     '<div class="success">Compiling esp32 project...</div>';
 
   try {
-    const result = await compileArduinoFromStrings(
-      url,
-      ino_source,
-      header_source,
-    );
+    const zipBuffer = await buildZipBuffer();
+
+    const result = await compileArduinoFromStrings(url, ino_source, zipBuffer);
 
     let output = "";
 
@@ -97,7 +111,7 @@ type CompileStringsResult = {
 async function compileArduinoFromStrings(
   apiBaseUrl: string,
   inoSource: string,
-  headerSource: string,
+  zipBuffer: ArrayBuffer,
 ): Promise<CompileStringsResult> {
   const form = new FormData();
   form.set(
@@ -106,9 +120,9 @@ async function compileArduinoFromStrings(
     "sesame.ino",
   );
   form.set(
-    "header_file",
-    new Blob([headerSource], { type: "text/plain" }),
-    "movement-sequences.h",
+    "zip_bundle",
+    new Blob([zipBuffer], { type: "application/zip" }),
+    "src.zip",
   );
 
   const response = await fetch(`${apiBaseUrl.replace(/\/+$/, "")}/compile`, {

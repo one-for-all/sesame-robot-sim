@@ -45,7 +45,8 @@ document.getElementById("createProjectBtn")!.addEventListener("click", () => {
 });
 
 document.getElementById("newFileBtn")!.addEventListener("click", () => {
-  const filename = "untitled";
+  // .h extension so arduino-cli treats it as a sketch source when compiling
+  const filename = "untitled.h";
   files[filename] = {
     content: "",
     language: "cpp",
