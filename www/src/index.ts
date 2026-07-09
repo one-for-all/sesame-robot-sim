@@ -4,7 +4,7 @@ import "chimpanzee-ui/css";
 import { initSimulator } from "./sim";
 import "./editor";
 import "./motion_button";
-import { files, inoFileName, resetFiles } from "./files";
+import { files, inoFileName } from "./files";
 import { openFile } from "./editor";
 import "./compile";
 import "./reset";
@@ -34,14 +34,6 @@ document
     const dialog = document.getElementById("projectDialog")!;
     dialog.classList.toggle("hidden");
   });
-
-document.getElementById("createProjectBtn")!.addEventListener("click", () => {
-  resetFiles();
-  renderExplorer();
-  renderFileBar();
-  openFile(inoFileName());
-  document.getElementById("projectDialog")!.classList.add("hidden");
-});
 
 document.getElementById("newFileBtn")!.addEventListener("click", () => {
   // .h extension so arduino-cli treats it as a sketch source when compiling
