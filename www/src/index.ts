@@ -4,7 +4,6 @@ import "chimpanzee-ui/css";
 import { initSimulator } from "./sim";
 import "./editor";
 import "./motion_button";
-import "./wasd";
 import { files, inoFileName, resetFiles } from "./files";
 import { openFile } from "./editor";
 import "./compile";
