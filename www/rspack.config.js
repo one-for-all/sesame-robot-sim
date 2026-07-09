@@ -1,4 +1,9 @@
-const { CopyRspackPlugin, HtmlRspackPlugin } = require("@rspack/core");
+const {
+  CopyRspackPlugin,
+  HtmlRspackPlugin,
+  CssExtractRspackPlugin,
+  rspack,
+} = require("@rspack/core");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
@@ -17,7 +22,7 @@ const rspackConfig = {
   devtool: isDev ? "inline-source-map" : false,
   output: {
     path: dist,
-    filename: "[name].js",
+    filename: "bundle.js",
     clean: true,
   },
   resolve: {
@@ -43,8 +48,7 @@ const rspackConfig = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-        type: "javascript/auto",
+        use: [rspack.CssExtractRspackPlugin.loader, "css-loader"],
       },
       {
         test: /\.ttf$/,
@@ -106,7 +110,12 @@ const rspackConfig = {
       ],
     }),
 
-    new MonacoWebpackPlugin(),
+    new MonacoWebpackPlugin({
+      languages: ["cpp", "markdown"],
+      themes: ["vs-dark"],
+    }),
+
+    new CssExtractRspackPlugin({ filename: "css/main.css" }),
   ],
   stats: {
     warnings: false,
