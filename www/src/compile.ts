@@ -5,8 +5,8 @@ import { currentFile, files, inoFileName } from "./files";
 import { editor } from "./editor";
 
 // Build and Run the code
-const url =
-  "https://esp32-compile-api-v2-0-12-452188812531.us-central1.run.app";
+const url = "https://esp32-compile-api-452188812531.us-central1.run.app";
+// const url = "http://localhost:8081";
 
 document.getElementById("runButton").addEventListener("click", async () => {
   await compileCode();
