@@ -28,6 +28,10 @@ path = "src/mesh_sesame.rs"
 name = "servo_sim"
 path = "src/servo_sim.rs"
 
+[[bin]]
+name = "repro_uart"
+path = "src/repro_uart.rs"
+
 [dependencies]
 gorilla-physics = { path = "../gorilla-physics/"}
 esp32rs = {path = "../esp32rs/"}
